@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#1b1446">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Maths Rockets">
+  <title>Maths Rockets</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="sky" aria-hidden="true"></div>
+
+  <!-- HOME -->
+  <main id="home" class="screen active">
+    <header class="top">
+      <div class="star-count" aria-label="Total stars"><span>⭐</span> <b id="totalStars">0</b></div>
+      <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙️</button>
+    </header>
+
+    <h1 class="title"><span class="rocket-bob">🚀</span> Maths Rockets</h1>
+    <p class="hello" id="hello">Pick a planet to fly to!</p>
+
+    <nav class="op-tabs" id="opTabs" hidden></nav>
+
+    <section class="planets" id="planets" aria-label="Choose a table"></section>
+
+    <div class="home-actions">
+      <button class="big-btn mix" id="mixBtn">🎲 Mix it up!</button>
+      <button class="big-btn stickers" id="stickersBtn">🦄 My friends <span id="stickerCount" class="pill">0</span></button>
+    </div>
+  </main>
+
+  <!-- PLAY -->
+  <main id="play" class="screen" aria-live="polite">
+    <header class="top">
+      <button class="icon-btn" id="quitBtn" aria-label="Back to planets">✖️</button>
+      <div class="track" aria-hidden="true">
+        <div class="track-fill" id="trackFill"></div>
+        <span class="track-rocket" id="trackRocket">🚀</span>
+        <span class="track-goal" id="trackGoal">🪐</span>
+      </div>
+      <div class="streak" id="streak" aria-label="Streak">🔥<b id="streakNum">0</b></div>
+    </header>
+
+    <div class="question-card" id="questionCard">
+      <div class="question" id="question">3 × 4</div>
+      <div class="equals">= <span class="qmark" id="qmark">?</span></div>
+      <div class="card-tools">
+        <button class="tool-btn" id="speakBtn" aria-label="Say it again">🔊</button>
+        <button class="tool-btn" id="hintBtn" aria-label="Show me">💡</button>
+      </div>
+    </div>
+
+    <div class="hint" id="hint" hidden></div>
+    <p class="praise" id="praise">&nbsp;</p>
+
+    <section class="answers" id="answers"></section>
+  </main>
+
+  <!-- RESULTS -->
+  <main id="results" class="screen">
+    <div class="results-card">
+      <h2 id="resultTitle">You made it!</h2>
+      <div class="big-stars" id="bigStars"></div>
+      <p id="resultText"></p>
+      <div class="new-friend" id="newFriend" hidden>
+        <p>You found a new friend!</p>
+        <div class="friend-emoji" id="friendEmoji">🦊</div>
+        <p class="friend-name" id="friendName">Fox</p>
+      </div>
+      <div class="home-actions">
+        <button class="big-btn mix" id="againBtn">🔁 Play again</button>
+        <button class="big-btn stickers" id="homeBtn">🏠 Planets</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- STICKER BOOK -->
+  <main id="stickers" class="screen">
+    <header class="top">
+      <button class="icon-btn" id="stickersBackBtn" aria-label="Back">⬅️</button>
+      <h2 class="screen-title">My space friends</h2>
+      <span class="icon-btn-spacer"></span>
+    </header>
+    <p class="hello" id="stickerHint">Finish a planet to find a new friend!</p>
+    <section class="sticker-grid" id="stickerGrid"></section>
+  </main>
+
+  <!-- SETTINGS -->
+  <dialog id="settings">
+    <form method="dialog" class="settings-card">
+      <h2>Settings</h2>
+      <label class="row">Player name
+        <input id="nameInput" type="text" maxlength="16" autocomplete="off" placeholder="e.g. Sam">
+      </label>
+      <label class="row toggle"><span>🔈 Sounds</span><input id="soundToggle" type="checkbox"></label>
+      <label class="row toggle"><span>🗣️ Read questions out loud</span><input id="voiceToggle" type="checkbox"></label>
+      <label class="row">Questions per game
+        <select id="lengthSelect">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="12">12</option>
+          <option value="20">20</option>
+        </select>
+      </label>
+      <button type="button" class="link-btn" id="resetBtn">Reset all progress</button>
+      <button class="big-btn mix" value="close">Done</button>
+    </form>
+  </dialog>
+
+  <div id="fx" aria-hidden="true"></div>
+
+  <script src="js/game.js"></script>
+</body>
+</html>

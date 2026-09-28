@@ -60,7 +60,7 @@
   const defaults = () => ({
     stars: {},        // "mul:3" -> best stars (1-3)
     friends: [],      // indexes into FRIENDS
-    settings: { name: '', sound: true, voice: true, length: 10, op: 'mul' },
+    settings: { name: '', sound: true, voice: true, length: 10, op: 'mul', peeks: 3 },
   });
 
   function load() {
@@ -155,8 +155,8 @@
   }
 
   // Resolves when speaking finishes (or straight away if voice is off).
-  function speak(text) {
-    if (!canSpeak || !data.settings.voice) return Promise.resolve();
+  function speak(text, force = false) {
+    if (!canSpeak || (!data.settings.voice && !force)) return Promise.resolve();
     return new Promise((resolve) => {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
@@ -249,6 +249,55 @@
   }
 
   // ---------------------------------------------------------------------------
+  // The whole table — shown before a game and when peeking mid-game
+  // ---------------------------------------------------------------------------
+  function tableName(opKey, t) {
+    return opKey === 'mul' ? `The ${t} times table` : `${OPS[opKey].symbol} ${t}`;
+  }
+
+  function renderTable(el, opKey, t) {
+    const op = OPS[opKey];
+    el.style.setProperty('--c', PLANET_COLOURS[t - 1]);
+    el.innerHTML = TABLES.map((n) => {
+      const f = op.fact(t, n);
+      return `<div class="fact"><span>${f.a} ${op.symbol} ${f.b} =</span><span class="ans">${f.answer}</span></div>`;
+    }).join('');
+  }
+
+  let studyTable = null;
+  let readToken = 0;
+
+  function stopReading() {
+    readToken++;
+    document.querySelectorAll('.fact.reading').forEach((r) => r.classList.remove('reading'));
+    if (canSpeak) speechSynthesis.cancel();
+  }
+
+  // Reads the table out loud one line at a time, lighting up each line.
+  async function readTable() {
+    stopReading();
+    const token = readToken;
+    const op = OPS[data.settings.op];
+    const rows = [...$('studyTable').children];
+    for (let i = 0; i < rows.length; i++) {
+      if (token !== readToken) return;
+      const f = op.fact(studyTable, TABLES[i]);
+      rows.forEach((r) => r.classList.toggle('reading', r === rows[i]));
+      rows[i].scrollIntoView({ block: 'center', behavior: 'smooth' });
+      await Promise.all([speak(`${f.a} ${op.word} ${f.b} is ${f.answer}`, true), sleep(700)]);
+    }
+    if (token === readToken) rows.forEach((r) => r.classList.remove('reading'));
+  }
+
+  function startStudy(table) {
+    studyTable = table;
+    $('studyTitle').textContent = tableName(data.settings.op, table);
+    $('studyReadBtn').hidden = !canSpeak;
+    renderTable($('studyTable'), data.settings.op, table);
+    show('study');
+  }
+
+  // ---------------------------------------------------------------------------
   // Game
   // ---------------------------------------------------------------------------
   let game = null;
@@ -260,12 +309,13 @@
       let pool = [];
       while (qs.length < length) {
         if (!pool.length) pool = shuffle(TABLES);
-        qs.push(op.fact(table, pool.pop()));
+        qs.push({ ...op.fact(table, pool.pop()), t: table });
       }
     } else {
       let last = '';
       while (qs.length < length) {
-        const q = op.fact(pick(TABLES), pick(TABLES));
+        const t = pick(TABLES);
+        const q = { ...op.fact(t, pick(TABLES)), t };
         const sig = `${q.a},${q.b}`;
         if (sig !== last) { qs.push(q); last = sig; }
       }
@@ -297,7 +347,9 @@
       streak: 0,
       misses: 0,
       busy: false,
+      peeksLeft: Number(data.settings.peeks) < 0 ? Infinity : Number(data.settings.peeks),
     };
+    stopReading();
     $('trackGoal').textContent = table ? '🪐' : '🌍';
     show('play');
     nextQuestion();
@@ -317,6 +369,7 @@
     $('praise').innerHTML = '&nbsp;';
     $('hint').hidden = true;
     $('hintBtn').hidden = !OPS[game.opKey].hint;
+    updatePeekBtn();
     $('answers').classList.remove('locked');
     $('answers').innerHTML = choicesFor(q).map((n, i) =>
       `<button class="answer" data-n="${n}" style="--c:${ANSWER_COLOURS[i]}">${n}</button>`
@@ -331,6 +384,27 @@
     $('trackRocket').style.left = `${Math.min(pct, 94)}%`;
     $('streakNum').textContent = game.streak;
     $('streak').classList.toggle('hot', game.streak >= 3);
+  }
+
+  function updatePeekBtn() {
+    const btn = $('peekBtn');
+    btn.hidden = Number(data.settings.peeks) === 0;
+    btn.disabled = game.peeksLeft <= 0;
+    $('peekLeft').textContent = game.peeksLeft === Infinity ? '∞' : game.peeksLeft;
+  }
+
+  function peek() {
+    if (!game || game.busy || game.peeksLeft <= 0) return;
+    const q = game.questions[game.index];
+    game.peeksLeft--;
+    updatePeekBtn();
+    $('peekTitle').textContent = tableName(game.opKey, q.t);
+    $('peekLeftText').textContent = game.peeksLeft === Infinity ? ''
+      : game.peeksLeft === 0 ? 'That was your last look this game!'
+      : `You can look ${game.peeksLeft} more time${game.peeksLeft === 1 ? '' : 's'} this game.`;
+    renderTable($('peekTable'), game.opKey, q.t);
+    $('peek').showModal();
+    $('peek').scrollTop = 0;
   }
 
   function showHint() {
@@ -424,7 +498,8 @@
 
   function leaveGame() {
     game = null;
-    if (canSpeak) speechSynthesis.cancel();
+    if ($('peek').open) $('peek').close();
+    stopReading();
     renderHome();
   }
 
@@ -435,7 +510,7 @@
     const p = e.target.closest('.planet');
     if (!p) return;
     sound('tap');
-    startGame(Number(p.dataset.table));
+    startStudy(Number(p.dataset.table));
   });
   $('opTabs').addEventListener('click', (e) => {
     const b = e.target.closest('button[data-op]');
@@ -445,6 +520,10 @@
     save();
     renderHome();
   });
+  $('studyGoBtn').addEventListener('click', () => { sound('tap'); startGame(studyTable); });
+  $('studyBackBtn').addEventListener('click', () => { sound('tap'); stopReading(); renderHome(); });
+  $('studyReadBtn').addEventListener('click', readTable);
+  $('peekBtn').addEventListener('click', () => { sound('tap'); peek(); });
   $('mixBtn').addEventListener('click', () => { sound('tap'); startGame(null); });
   $('stickersBtn').addEventListener('click', () => { sound('tap'); renderStickers(); });
   $('stickersBackBtn').addEventListener('click', () => { sound('tap'); renderHome(); });
@@ -477,6 +556,7 @@
     $('voiceToggle').checked = data.settings.voice;
     $('voiceToggle').disabled = !canSpeak;
     $('lengthSelect').value = String(data.settings.length);
+    $('peeksSelect').value = String(data.settings.peeks);
     dlg.showModal();
   });
   dlg.addEventListener('close', () => {
@@ -484,6 +564,7 @@
     data.settings.sound = $('soundToggle').checked;
     data.settings.voice = $('voiceToggle').checked;
     data.settings.length = Number($('lengthSelect').value) || 10;
+    data.settings.peeks = Number($('peeksSelect').value);
     save();
     renderHome();
   });

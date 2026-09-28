@@ -40,6 +40,20 @@
     </div>
   </main>
 
+  <!-- STUDY: look at the whole table before flying -->
+  <main id="study" class="screen">
+    <header class="top">
+      <button class="icon-btn" id="studyBackBtn" aria-label="Back to planets">⬅️</button>
+      <h2 class="screen-title" id="studyTitle">The 3 times table</h2>
+      <button class="icon-btn" id="studyReadBtn" aria-label="Read the table to me">🔊</button>
+    </header>
+    <p class="hello">Have a look, then blast off!</p>
+    <section class="table-list" id="studyTable"></section>
+    <div class="sticky-go">
+      <button class="big-btn mix" id="studyGoBtn">🚀 Start!</button>
+    </div>
+  </main>
+
   <!-- PLAY -->
   <main id="play" class="screen" aria-live="polite">
     <header class="top">
@@ -58,6 +72,7 @@
       <div class="card-tools">
         <button class="tool-btn" id="speakBtn" aria-label="Say it again">🔊</button>
         <button class="tool-btn" id="hintBtn" aria-label="Show me">💡</button>
+        <button class="tool-btn peek-btn" id="peekBtn" aria-label="Look at the table">📋<span class="badge" id="peekLeft">3</span></button>
       </div>
     </div>
 
@@ -96,6 +111,16 @@
     <section class="sticker-grid" id="stickerGrid"></section>
   </main>
 
+  <!-- PEEK: look at the table mid-game -->
+  <dialog id="peek" class="peek-dialog">
+    <form method="dialog" class="peek-card">
+      <h2 id="peekTitle">The 3 times table</h2>
+      <p class="peek-left" id="peekLeftText"></p>
+      <section class="table-list" id="peekTable"></section>
+      <button class="big-btn mix" value="close">👍 Got it!</button>
+    </form>
+  </dialog>
+
   <!-- SETTINGS -->
   <dialog id="settings">
     <form method="dialog" class="settings-card">
@@ -111,6 +136,17 @@
           <option value="10">10</option>
           <option value="12">12</option>
           <option value="20">20</option>
+        </select>
+      </label>
+      <label class="row">📋 Looks at the table during a game
+        <select id="peeksSelect">
+          <option value="0">None</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="-1">Unlimited</option>
         </select>
       </label>
       <button type="button" class="link-btn" id="resetBtn">Reset all progress</button>

@@ -3,13 +3,15 @@
 A times tables game for little learners. Each table from 1 to 12 is a planet to fly to.
 
 - **12 planets.** Pick a table and answer 10 questions to fly your rocket to that planet.
+- **📖 Look before you fly.** Tapping a planet first shows the whole table. 🔊 reads it out line by line, then **🚀 Start!** begins the game.
+- **📋 Peek mid-game.** Opens the table for the current question. The number of looks per game is a setting (none, 1, 2, 3, 5, 10 or unlimited; default 3).
 - **🎲 Mix it up.** Random questions from every table.
 - **Big answer buttons.** You pick from four choices, so there's no typing.
 - **🔊 Read aloud.** Every question is spoken, so you don't need to read. After a right answer it says the whole fact ("3 times 4 is 12").
 - **💡 "Show me" dots.** Shows the sum as groups of dots, e.g. 3 groups of 4. The dots also appear by themselves after two wrong tries.
 - **Rewards.** Up to 3 stars per planet, 🔥 streaks, confetti and sounds. Every finished game unlocks a new space friend (36 to collect).
 - **Gentle mistakes.** A wrong answer wobbles and greys out, then you try again. You can never lose.
-- **⚙️ Settings.** Player name (used in praise), sounds on/off, voice on/off, and questions per game.
+- **⚙️ Settings.** Player name (used in praise), sounds on/off, voice on/off, questions per game, and looks at the table per game.
 
 Progress is saved on the phone itself (in the browser's local storage). There are no accounts and no tracking.
 

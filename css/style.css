@@ -217,6 +217,47 @@ button { cursor: pointer; border: 0; touch-action: manipulation; }
 @keyframes shake { 25% { transform: translateX(-8px); } 50% { transform: translateX(8px); } 75% { transform: translateX(-4px); } }
 .answers.locked .answer { pointer-events: none; }
 
+.peek-btn { position: relative; }
+.peek-btn .badge {
+  position: absolute; top: -4px; right: -6px;
+  min-width: 22px; height: 22px; padding: 0 5px; border-radius: 999px;
+  background: #ff5fa2; color: #fff; font-size: 14px; font-weight: 800; line-height: 22px;
+}
+.peek-btn:disabled { opacity: .35; }
+.peek-btn:disabled .badge { background: #8a84a8; }
+
+/* ---------- the whole table (study screen + mid-game peek) ---------- */
+.table-list { display: grid; gap: 6px; }
+.fact {
+  display: grid; grid-template-columns: 1fr auto; align-items: center;
+  padding: 4px 8px 4px 18px; border-radius: 18px;
+  background: rgba(255,255,255,.1);
+  font-size: clamp(24px, 7.5vw, 32px); font-weight: 800; line-height: 1.3;
+  transition: transform .2s, background .2s;
+}
+.fact:nth-child(even) { background: rgba(255,255,255,.16); }
+.fact .ans {
+  min-width: 2.3em; text-align: center; border-radius: 14px;
+  background: var(--c, var(--gold)); color: var(--ink); padding: 0 8px;
+}
+.fact.reading { background: var(--gold); color: var(--ink); transform: scale(1.04); }
+.fact.reading .ans { background: #fff; }
+
+.sticky-go {
+  position: sticky; bottom: 0; margin-top: 16px;
+  padding: 12px 0 calc(env(safe-area-inset-bottom) + 4px);
+  background: linear-gradient(transparent, var(--bg1) 35%);
+}
+.sticky-go .big-btn { width: 100%; font-size: 30px; min-height: 72px; }
+
+.peek-dialog { background: var(--bg2); color: #fff; max-height: 92dvh; }
+.peek-card { padding: 16px 14px; display: grid; gap: 8px; }
+.peek-card h2 { margin: 0; text-align: center; font-size: 28px; }
+.peek-card .peek-left { margin: 0; text-align: center; color: var(--muted); font-size: 18px; }
+.peek-card .table-list { gap: 4px; }
+.peek-card > .big-btn { position: sticky; bottom: 0; }
+.peek-card .fact { font-size: clamp(20px, 6vw, 24px); line-height: 1.2; padding-block: 3px; }
+
 /* ---------- results ---------- */
 .results-card {
   margin: auto 0; text-align: center;
